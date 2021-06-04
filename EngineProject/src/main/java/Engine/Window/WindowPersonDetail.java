@@ -19,7 +19,6 @@ import java.util.List;
 
 public class WindowPersonDetail extends javax.swing.JDialog {
     private NotificationPersonDetail notification;
-    private WindowPerson windowPerson;
     private DependencyRepository dependencies;
     private DBOperationState personOperation;
     private List<City> cities;
@@ -129,11 +128,7 @@ public class WindowPersonDetail extends javax.swing.JDialog {
             this.setTitle("Editar Pessoa");
         }
     }
-    
-    public void SetWindowPerson(WindowPerson window) {
-        windowPerson = window;
-    }
-    
+        
     public void LoadCities() {
         var handler = dependencies.RegionHandler;
         

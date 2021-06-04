@@ -17,7 +17,7 @@ public class DBEmployee extends DBTemplate {
     }
     
     public boolean IsPersonUsed(int personId) {
-        var query = "UPDATE Id FROM Employee WHERE PersonId = ?";
+        var query = "SELECT Id FROM Employee WHERE PersonId = ?";
         
         var command = new DBCommand(connection);
         var error = command.CreateQuery(query);

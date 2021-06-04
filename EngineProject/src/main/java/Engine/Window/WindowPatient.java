@@ -142,6 +142,7 @@ public class WindowPatient extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Pacientes");
+        setResizable(false);
 
         TablePatient.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         TablePatient.setModel(new javax.swing.table.DefaultTableModel(

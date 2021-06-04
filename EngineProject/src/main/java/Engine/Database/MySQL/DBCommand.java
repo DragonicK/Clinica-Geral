@@ -9,7 +9,7 @@ import Engine.Database.Interface.IDBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class DBCommand implements IDBCommand {
     private Connection connection;
@@ -89,7 +89,7 @@ public class DBCommand implements IDBCommand {
                     preparedStatement.setString(paramCount, (String)value);
                 }
                 case Date -> {
-                    preparedStatement.setDate(paramCount, ConvertDate((java.util.Date)value));
+                    preparedStatement.setTimestamp(paramCount, ConvertDate((java.util.Date)value));
                 }
             }
         }
@@ -120,7 +120,7 @@ public class DBCommand implements IDBCommand {
         }
     }    
     
-    private Date ConvertDate(java.util.Date date) {
-        return new Date(date.getTime());
+    private Timestamp ConvertDate(java.util.Date date) {
+        return new Timestamp(date.getTime());
     }
 }

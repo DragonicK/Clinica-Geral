@@ -75,7 +75,7 @@ public class EmployeeHandler implements IEmployeeHandler {
     }
     
     @Override
-    public List<Employee> GetEmplyees() {
+    public List<Employee> GetEmployees() {
         var db = new DBEmployee(configuration);
         var error = db.Open();
         

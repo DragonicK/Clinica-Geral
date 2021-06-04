@@ -1,95 +1,65 @@
 package Engine.Window;
 
-import Engine.Person;
+import Engine.Schedule;
 import Engine.Common.Strings;
-import Engine.Communication.DependencyRepository;
 import Engine.Database.DBOperationState;
 import Engine.Window.Observer.Changes;
-import Engine.Window.Observer.NotificationPerson;
+import Engine.Window.Observer.NotificationSchedule;
+import Engine.Communication.DependencyRepository;
 
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
-
+import java.text.SimpleDateFormat;
 import java.awt.event.KeyEvent;
 import java.util.List;
-import java.text.SimpleDateFormat;
 
-public class WindowPerson extends javax.swing.JFrame {
-    // Componente de notificação da janela.
-    private NotificationPerson notification;
+public class WindowSchedule extends javax.swing.JFrame {
     private DependencyRepository dependencies;
-    private WindowPersonDetail detail;
-    // Lista de pessoas.
-    private List<Person> persons;
-    // Linha selecionada na tabela.
+    private NotificationSchedule notification;
+    private WindowScheduleDetail detail;
+    private List<Schedule> schedules;
     private int selectedRow;
     
-    public WindowPerson() {
+    public WindowSchedule() {
         initComponents();
         
-        RadioGroup.add(RadioDocument);
-        RadioGroup.add(RadioName);
+        RadioParam.add(RadioDocument);
+        RadioParam.add(RadioName);
+        
+        RadioPerson.add(RadioPatient);
+        RadioPerson.add(RadioEmployee);
         
         SetEnabledButtons(false);
     }
     
-    public void SetDependency(DependencyRepository dependency) {
-        dependencies = dependency;
+    public void SetDependency(DependencyRepository repository) {
+        dependencies = repository;
         
-        // A janela somente é atualizada,
-        // se alguma alteração em Pessoa ocorrer.
-        notification = new NotificationPerson(this);
+        notification = new NotificationSchedule(this);
         notification.Add(Changes.Person);
+        notification.Add(Changes.Patient);
+        notification.Add(Changes.Employee);
+        notification.Add(Changes.Schedule);
         
         dependencies.Notifier.Add(notification);
     }
     
     public void ClearTable() {
-        var model = (DefaultTableModel)TablePerson.getModel();
+        var model = (DefaultTableModel)TableSchedule.getModel();
         model.setRowCount(0);
         
         selectedRow = -1;
         
-        TablePerson.revalidate();
+        TableSchedule.revalidate();
     }
     
-    public void LoadPersons() {
-        var handler = dependencies.PersonHandler;
+    public void LoadSchedules() {
+        var handler = dependencies.ScheduleHandler;
         
         if (handler != null) {
-            persons = handler.GetPersons();
-            FillPersons(persons);
+            schedules = handler.GetSchedules();
+            FillSchedule();
         }
-    }
-    
-    public void FillPersons(List<Person> list) {
-        var count = list.size();
-        var model = (DefaultTableModel)TablePerson.getModel();
-        var formatter = new SimpleDateFormat("dd-MM-yyyy");
-        
-        for (var i = 0; i < count; i++) {
-            var person = list.get(i);
-            
-            Object[] row = {
-                person.Name,
-                person.Document,
-                person.Email,
-                formatter.format(person.Birthday)
-            };
-            
-            model.addRow(row);
-        }
-    }
-    
-    public void SetEnabledControls(boolean enabled) {
-        TextFind.setEnabled(enabled);
-        TablePerson.setEnabled(enabled);
-    }
-    
-    public void SetEnabledButtons(boolean enabled) {
-        ButtonEdit.setEnabled(enabled);
-        ButtonExclude.setEnabled(enabled);
     }
     
     public void UpdateWindow() {
@@ -97,89 +67,138 @@ public class WindowPerson extends javax.swing.JFrame {
         SetEnabledControls(true);
     }
     
-    private void Find() {
-        var handler = dependencies.PersonHandler;
-        
-        if (TextFind.getText().length() > 0) {
-            if (RadioName.isSelected()) {
-                persons = handler.FindByName(TextFind.getText().trim());
-            }
+    private void FillSchedule() {
+        if (schedules != null) {
+            var count = schedules.size();
+            var model = (DefaultTableModel)TableSchedule.getModel();
+            var formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             
-            if (RadioDocument.isSelected()) {
-                var document = TextFind.getText().trim();
-                persons = handler.FindByDocument(Strings.ConvertToDocument(document));
+            for (var i = 0; i < count; i++) {
+                var schedule = schedules.get(i);
+                
+                Object[] row = {
+                    schedule.PatientName,
+                    schedule.PatientDocument,
+                    schedule.EmployeeName,
+                    formatter.format(schedule.Date),
+                    schedule.State == 0 ? "Aguardando" : "Finalizado"
+                };
+                
+                model.addRow(row);
             }
         }
-        else {
-            persons = handler.GetPersons();
+    }
+    
+    public void SetEnabledControls(boolean enabled) {
+        TextFind.setEnabled(enabled);
+        TableSchedule.setEnabled(enabled);
+    }
+    
+    public void SetEnabledButtons(boolean enabled) {
+        ButtonEdit.setEnabled(enabled);
+        ButtonExclude.setEnabled(enabled);
+    }
+    
+    private void Find() {
+        if (RadioPatient.isSelected()){
+            FindByPatient();
+        }
+        else if (RadioEmployee.isSelected()) {
+            FindByEmployee();
         }
         
         SetEnabledButtons(false);
         
         ClearTable();
         
-        FillPersons(persons);
+        FillSchedule();
     }
     
-    private void ShowMessage(String message) {
-        JOptionPane.showMessageDialog(this,
-                "Houve um problema:\n\n" + message,
-                "Pessoa",
-                JOptionPane.INFORMATION_MESSAGE);
+    private void FindByPatient() {
+        var handler = dependencies.ScheduleHandler;
+        
+        if (TextFind.getText().length() > 0) {
+            if (RadioName.isSelected()) {
+                schedules = handler.FindByPatientName(TextFind.getText().trim());
+            }
+            
+            if (RadioDocument.isSelected()) {
+                var document = TextFind.getText().trim();
+                schedules = handler.FindByPatientDocument(Strings.ConvertToDocument(document));
+            }
+        }
+        else {
+            schedules = handler.GetSchedules();
+        }
+    }
+    
+    private void FindByEmployee() {
+        var handler = dependencies.ScheduleHandler;
+        
+        if (TextFind.getText().length() > 0) {
+            if (RadioName.isSelected()) {
+                schedules = handler.FindByEmployeeName(TextFind.getText().trim());
+            }
+            
+            if (RadioDocument.isSelected()) {
+                var document = TextFind.getText().trim();
+                schedules = handler.FindByEmployeeDocument(Strings.ConvertToDocument(document));
+            }
+        }
+        else {
+            schedules = handler.GetSchedules();
+        }
+    }
+    
+    private void ShowErrorMessage(String message) {
+        MessageBox.Show(this,
+                message,
+                "Houve um problema",
+                "Agendamento",
+                MessageBoxInformation.Error
+        );
     }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        RadioGroup = new javax.swing.ButtonGroup();
-        jLabel1 = new javax.swing.JLabel();
-        TextFind = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
+        RadioParam = new javax.swing.ButtonGroup();
+        RadioPerson = new javax.swing.ButtonGroup();
         jScrollPane2 = new javax.swing.JScrollPane();
-        TablePerson = new javax.swing.JTable();
+        TableSchedule = new javax.swing.JTable();
         ButtonEdit = new javax.swing.JButton();
         ButtonExclude = new javax.swing.JButton();
+        TextFind = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
         RadioDocument = new javax.swing.JRadioButton();
         RadioName = new javax.swing.JRadioButton();
+        jLabel2 = new javax.swing.JLabel();
+        RadioPatient = new javax.swing.JRadioButton();
+        RadioEmployee = new javax.swing.JRadioButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemNew = new javax.swing.JMenuItem();
         MenuItemExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Pessoas");
+        setTitle("Agendamento");
         setResizable(false);
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        jLabel1.setText("Pesquisar por:");
-
-        TextFind.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        TextFind.setToolTipText("Quando a pesquisa é feita com o campo em branco, irá retornar todas as pessoas.");
-        TextFind.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                TextFindKeyPressed(evt);
-            }
-        });
-
-        jLabel2.setFont(new java.awt.Font("Verdana", 2, 12)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Pressione ENTER para iniciar a pesquisa.");
-
-        TablePerson.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        TablePerson.setModel(new javax.swing.table.DefaultTableModel(
+        TableSchedule.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        TableSchedule.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Nome", "CPF", "Email", "Data Nascimento"
+                "Nome", "CPF", "Colaborador", "Data", "Estado"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -190,13 +209,13 @@ public class WindowPerson extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        TablePerson.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        TablePerson.addMouseListener(new java.awt.event.MouseAdapter() {
+        TableSchedule.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        TableSchedule.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TablePersonMouseClicked(evt);
+                TableScheduleMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(TablePerson);
+        jScrollPane2.setViewportView(TableSchedule);
 
         ButtonEdit.setText("Editar");
         ButtonEdit.setEnabled(false);
@@ -214,6 +233,17 @@ public class WindowPerson extends javax.swing.JFrame {
             }
         });
 
+        TextFind.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        TextFind.setToolTipText("Quando a pesquisa é feita com o campo em branco, irá retornar todas as pessoas.");
+        TextFind.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TextFindKeyPressed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        jLabel1.setText("Pesquisar por:");
+
         RadioDocument.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         RadioDocument.setSelected(true);
         RadioDocument.setText("CPF");
@@ -221,11 +251,22 @@ public class WindowPerson extends javax.swing.JFrame {
         RadioName.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         RadioName.setText("Nome");
 
+        jLabel2.setFont(new java.awt.Font("Verdana", 2, 12)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("Pressione ENTER para iniciar a pesquisa.");
+
+        RadioPatient.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        RadioPatient.setSelected(true);
+        RadioPatient.setText("Paciente");
+
+        RadioEmployee.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        RadioEmployee.setText("Colaborador");
+
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
         MenuItemNew.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        MenuItemNew.setText("Nova Pessoa");
+        MenuItemNew.setText("Novo Agendamento");
         MenuItemNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MenuItemNewActionPerformed(evt);
@@ -251,7 +292,7 @@ public class WindowPerson extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -260,38 +301,105 @@ public class WindowPerson extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
                     .addComponent(TextFind)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(RadioDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(RadioName, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(8, 8, 8)))
-                .addContainerGap(16, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(106, 106, 106)
+                                .addComponent(RadioPatient, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(RadioDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(RadioName, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(8, 8, 8))
+                            .addComponent(RadioEmployee))))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(7, 7, 7)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(RadioDocument)
                     .addComponent(RadioName))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(3, 3, 3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(RadioEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(RadioPatient))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(TextFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(12, 12, 12)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void TableScheduleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableScheduleMouseClicked
+        var source = (JTable)evt.getSource();
+        int row = source.rowAtPoint( evt.getPoint() );
+        
+        SetEnabledButtons(false);
+        
+        selectedRow = -1;
+        
+        if (row >= 0 && schedules.size() > 0) {
+            SetEnabledButtons(true);
+            selectedRow = row;
+        }
+    }//GEN-LAST:event_TableScheduleMouseClicked
+
+    private void ButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonEditActionPerformed
+        if (selectedRow >= 0) {
+            var schedule = schedules.get(selectedRow);
+            
+            if (detail == null) {
+                detail = new WindowScheduleDetail();
+                detail.SetDependency(dependencies);
+                detail.setLocationRelativeTo(null);
+            }
+            
+            if (!detail.isVisible()) {
+                detail.Clear();
+                detail.SetOperationState(DBOperationState.Update);
+                detail.LoadPatients();
+                detail.LoadEmployees();
+                detail.SetSchedule(schedule);
+                detail.setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_ButtonEditActionPerformed
+
+    private void ButtonExcludeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonExcludeActionPerformed
+        if (selectedRow >= 0) {
+            var handler = dependencies.ScheduleHandler;
+            var schedule = schedules.get(selectedRow);
+            
+            if (handler.CanDelete(schedule)) {
+                handler.Delete(schedule);
+                
+                schedules.remove(schedule);
+                selectedRow = -1;
+                
+                // Notifica todos os controles que o agendamento foi alterado.
+                dependencies.Notifier.Notify(Changes.Schedule);
+            }
+            else {
+                ShowErrorMessage("Este agendamento está vinculado com um tratamento finalizado e não pode ser excluído.");
+            }
+        }
+    }//GEN-LAST:event_ButtonExcludeActionPerformed
 
     private void TextFindKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TextFindKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -304,65 +412,9 @@ public class WindowPerson extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_TextFindKeyPressed
 
-    private void TablePersonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablePersonMouseClicked
-        var source = (JTable)evt.getSource();
-        int row = source.rowAtPoint( evt.getPoint() );
-        
-        SetEnabledButtons(false);
-        
-        selectedRow = -1;
-        
-        if (row >= 0 && persons.size() > 0) {
-            SetEnabledButtons(true);
-            selectedRow = row;
-        }
-    }//GEN-LAST:event_TablePersonMouseClicked
-
-    private void ButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonEditActionPerformed
-        if (selectedRow >= 0) {
-            var person = persons.get(selectedRow);
-            
-            if (detail == null) {
-                detail = new WindowPersonDetail();
-                detail.SetDependency(dependencies);
-                detail.setLocationRelativeTo(null);
-            }
-            
-            if (!detail.isVisible()) {
-                detail.Clear();
-                detail.SetOperationState(DBOperationState.Update);
-                detail.LoadCities();
-                detail.SetPerson(person); 
-                detail.setVisible(true);
-            }
-        }
-    }//GEN-LAST:event_ButtonEditActionPerformed
-
-    private void ButtonExcludeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonExcludeActionPerformed
-        if (selectedRow >= 0) {
-            var handler = dependencies.PersonHandler;
-            var person = persons.get(selectedRow);
-            
-            if (handler.CanDelete(person)) {
-                handler.Delete(person);
-                handler.DeleteContacts(person);
-                handler.DeleteAddresses(person);
-                
-                persons.remove(person);
-                selectedRow = -1;
-                
-                // Notifica todos os controles que pessoas foram alteradas.
-                dependencies.Notifier.Notify(Changes.Person);
-            }
-            else {
-                ShowMessage("Esta pessoa está vinculado com um colaborador, fornecedor ou paciente e não pode ser excluído.");
-            }
-        }
-    }//GEN-LAST:event_ButtonExcludeActionPerformed
-
     private void MenuItemNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemNewActionPerformed
         if (detail == null) {
-            detail = new WindowPersonDetail();
+            detail = new WindowScheduleDetail();
             detail.SetDependency(dependencies);
             detail.setLocationRelativeTo(null);
         }
@@ -370,7 +422,8 @@ public class WindowPerson extends javax.swing.JFrame {
         if (!detail.isVisible()) {
             detail.Clear();
             detail.SetOperationState(DBOperationState.Insert);
-            detail.LoadCities();
+            detail.LoadPatients();
+            detail.LoadEmployees();
             detail.setVisible(true);
         }
     }//GEN-LAST:event_MenuItemNewActionPerformed
@@ -383,6 +436,9 @@ public class WindowPerson extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_MenuItemExitActionPerformed
     
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -397,20 +453,20 @@ public class WindowPerson extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(WindowPerson.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(WindowSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(WindowPerson.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(WindowSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(WindowPerson.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(WindowSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(WindowPerson.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(WindowSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new WindowPerson().setVisible(true);
+                new WindowSchedule().setVisible(true);
             }
         });
     }
@@ -421,9 +477,12 @@ public class WindowPerson extends javax.swing.JFrame {
     private javax.swing.JMenuItem MenuItemExit;
     private javax.swing.JMenuItem MenuItemNew;
     private javax.swing.JRadioButton RadioDocument;
-    private javax.swing.ButtonGroup RadioGroup;
+    private javax.swing.JRadioButton RadioEmployee;
     private javax.swing.JRadioButton RadioName;
-    private javax.swing.JTable TablePerson;
+    private javax.swing.ButtonGroup RadioParam;
+    private javax.swing.JRadioButton RadioPatient;
+    private javax.swing.ButtonGroup RadioPerson;
+    private javax.swing.JTable TableSchedule;
     private javax.swing.JTextField TextFind;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

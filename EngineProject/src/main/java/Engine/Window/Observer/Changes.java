@@ -9,5 +9,6 @@ public enum Changes {
     Product,
     Patient,
     Supplier,
-    Employee
+    Employee,
+    Schedule
 }

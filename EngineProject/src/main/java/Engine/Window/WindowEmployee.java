@@ -68,7 +68,7 @@ public class WindowEmployee extends javax.swing.JFrame {
         var handler = dependencies.EmployeeHandler;
         
         if (handler != null) {
-            employees = handler.GetEmplyees();
+            employees = handler.GetEmployees();
             FillEmployees(employees);
         }
     }
@@ -106,7 +106,7 @@ public class WindowEmployee extends javax.swing.JFrame {
             }
         }
         else {
-            employees = handler.GetEmplyees();
+            employees = handler.GetEmployees();
         }
         
         ClearTable();
@@ -142,7 +142,8 @@ public class WindowEmployee extends javax.swing.JFrame {
         MenuItemNew = new javax.swing.JMenuItem();
         MenuItemExit = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         ButtonEdit.setText("Editar");
         ButtonEdit.setEnabled(false);
@@ -263,7 +264,7 @@ public class WindowEmployee extends javax.swing.JFrame {
                             .addGap(132, 132, 132)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(8, 8, 8))))
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

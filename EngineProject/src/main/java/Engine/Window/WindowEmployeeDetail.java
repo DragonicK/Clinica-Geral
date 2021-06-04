@@ -243,6 +243,7 @@ public class WindowEmployeeDetail extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         ComboPerson.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ComboPerson.addItemListener(new java.awt.event.ItemListener() {

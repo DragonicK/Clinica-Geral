@@ -9,7 +9,7 @@ public interface IEmployeeHandler {
     void Update(Employee employee);
     void Put(Employee employee);
     void Delete(Employee employee);
-    List<Employee> GetEmplyees();
+    List<Employee> GetEmployees();
     List<Employee> FindByName(String name);
     List<Employee> FindByDocument(String document);
 }

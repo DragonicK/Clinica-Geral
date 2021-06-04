@@ -52,7 +52,7 @@ public class DBReader implements IDBReader {
                     return resultSet.getString(column);
                 }
                 case Date -> {
-                    return ConvertDate(resultSet.getDate(column));
+                    return ConvertDate(resultSet.getTimestamp(column));
                 }
             }
         }
@@ -73,7 +73,7 @@ public class DBReader implements IDBReader {
         }
     }
     
-    private Date ConvertDate(java.sql.Date date) {
-        return new Date(date.getTime());
+    private Date ConvertDate(java.sql.Timestamp timestamp) {
+        return new Date(timestamp.getTime());
     }
 }

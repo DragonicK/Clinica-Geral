@@ -1,11 +1,11 @@
 package Engine.Window;
 
-
 import Engine.Handler.PersonHandler;
 import Engine.Handler.RegionHandler;
 import Engine.Handler.ProductHandler;
 import Engine.Handler.PatientHandler;
 import Engine.Handler.SupplierHandler;
+import Engine.Handler.ScheduleHandler;
 import Engine.Handler.EmployeeHandler;
 import Engine.Database.DBConfiguration;
 import Engine.Window.Observer.Changes;
@@ -21,6 +21,7 @@ public class WindowMain extends javax.swing.JFrame {
     private WindowSupplier windowSupplier;
     private WindowPatient windowPatient;
     private WindowEmployee windowEmployee;
+    private WindowSchedule windowSchedule;
     private DependencyRepository dependencies;
     
     public WindowMain() {
@@ -36,6 +37,7 @@ public class WindowMain extends javax.swing.JFrame {
         notification = new NotificationMain(this);
         notification.Add(Changes.Patient);
         notification.Add(Changes.Person);
+        notification.Add(Changes.Schedule);
         
         var notifier = new Notifier();
         notifier.Add(notification);
@@ -47,6 +49,7 @@ public class WindowMain extends javax.swing.JFrame {
         dependencies.PatientHandler = new PatientHandler(config);
         dependencies.ProductHandler = new ProductHandler(config);
         dependencies.SupplierHandler = new SupplierHandler(config);
+        dependencies.ScheduleHandler = new ScheduleHandler(config);
         dependencies.RegionHandler = new RegionHandler(config);
         dependencies.PersonHandler = new PersonHandler(config);
     }
@@ -59,8 +62,8 @@ public class WindowMain extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        TableSchedule = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemExit = new javax.swing.JMenuItem();
@@ -71,22 +74,43 @@ public class WindowMain extends javax.swing.JFrame {
         MenuItemPatient = new javax.swing.JMenuItem();
         MenuItemEmployee = new javax.swing.JMenuItem();
         MenuItemRegion = new javax.swing.JMenuItem();
+        MenuItemSchedule = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gerenciamento de Clínica");
+        setResizable(false);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TableSchedule.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        TableSchedule.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Nome", "CPF", "Colaborador", "Data"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        TableSchedule.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        TableSchedule.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TableScheduleMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(TableSchedule);
 
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -160,6 +184,15 @@ public class WindowMain extends javax.swing.JFrame {
         });
         jMenu2.add(MenuItemRegion);
 
+        MenuItemSchedule.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        MenuItemSchedule.setText("Agendamento");
+        MenuItemSchedule.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MenuItemScheduleActionPerformed(evt);
+            }
+        });
+        jMenu2.add(MenuItemSchedule);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -168,17 +201,17 @@ public class WindowMain extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(20, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(17, 17, 17))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
@@ -280,6 +313,24 @@ public class WindowMain extends javax.swing.JFrame {
             windowEmployee.setVisible(true);
         }  
     }//GEN-LAST:event_MenuItemEmployeeActionPerformed
+
+    private void TableScheduleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableScheduleMouseClicked
+
+    }//GEN-LAST:event_TableScheduleMouseClicked
+
+    private void MenuItemScheduleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemScheduleActionPerformed
+        if (windowSchedule == null) {
+            windowSchedule = new WindowSchedule();
+            windowSchedule.SetDependency(dependencies);
+            windowSchedule.setLocationRelativeTo(null);
+        }
+        
+        if (!windowSchedule.isVisible()) {
+            windowSchedule.ClearTable();
+            windowSchedule.LoadSchedules();
+            windowSchedule.setVisible(true);
+        }  
+    }//GEN-LAST:event_MenuItemScheduleActionPerformed
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -320,11 +371,12 @@ public class WindowMain extends javax.swing.JFrame {
     private javax.swing.JMenuItem MenuItemPerson;
     private javax.swing.JMenuItem MenuItemProduct;
     private javax.swing.JMenuItem MenuItemRegion;
+    private javax.swing.JMenuItem MenuItemSchedule;
     private javax.swing.JMenuItem MenuItemSupplier;
+    private javax.swing.JTable TableSchedule;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 }

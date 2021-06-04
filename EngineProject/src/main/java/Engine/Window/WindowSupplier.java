@@ -150,6 +150,7 @@ public class WindowSupplier extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Fornecedores");
+        setResizable(false);
 
         TableSupplier.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         TableSupplier.setModel(new javax.swing.table.DefaultTableModel(

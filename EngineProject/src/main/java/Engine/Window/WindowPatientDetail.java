@@ -221,6 +221,7 @@ public class WindowPatientDetail extends javax.swing.JDialog {
         ComboPerson = new javax.swing.JComboBox<>();
         ComboCompanion = new javax.swing.JComboBox<>();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         PatientTextEmail.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
