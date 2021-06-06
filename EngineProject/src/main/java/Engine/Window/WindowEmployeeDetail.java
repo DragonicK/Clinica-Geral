@@ -23,6 +23,8 @@ public class WindowEmployeeDetail extends javax.swing.JFrame {
     
     public WindowEmployeeDetail() {
         initComponents();
+        
+        this.setResizable(false);
                 
         RadioGroup.add(RadioName);
         RadioGroup.add(RadioDocument);

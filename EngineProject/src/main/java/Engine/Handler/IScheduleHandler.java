@@ -3,9 +3,11 @@ package Engine.Handler;
 import Engine.Schedule;
 
 import java.util.List;
+import java.util.Date;
 
 public interface IScheduleHandler {   
     List<Schedule> GetSchedules();
+    List<Schedule> FindByDate(Date date);
     List<Schedule> FindByPatientDocument(String document);
     List<Schedule> FindByPatientName(String name);
     List<Schedule> FindByEmployeeDocument(String document);

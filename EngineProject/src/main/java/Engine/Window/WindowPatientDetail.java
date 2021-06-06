@@ -24,6 +24,7 @@ public class WindowPatientDetail extends javax.swing.JDialog {
     public WindowPatientDetail() {
         initComponents();     
         this.setModal(true);
+        this.setResizable(false);
         
         RadioGroup.add(RadioName);
         RadioGroup.add(RadioDocument);

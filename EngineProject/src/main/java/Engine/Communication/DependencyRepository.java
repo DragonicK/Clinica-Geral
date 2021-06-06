@@ -8,6 +8,7 @@ import Engine.Handler.IPatientHandler;
 import Engine.Handler.ISupplierHandler;
 import Engine.Handler.IEmployeeHandler;
 import Engine.Handler.IScheduleHandler;
+import Engine.Handler.ITreatmentHandler;
 import Engine.Database.DBConfiguration;
 
 public class DependencyRepository {
@@ -27,5 +28,6 @@ public class DependencyRepository {
     public IScheduleHandler ScheduleHandler;
     // Controlador de colaboradores.
     public IEmployeeHandler EmployeeHandler;
+    public ITreatmentHandler TreatmentHandler;   
     public DBConfiguration DBConfiguration;
 }

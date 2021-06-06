@@ -29,6 +29,7 @@ public class WindowRegion extends javax.swing.JFrame {
     
     public WindowRegion() {
         initComponents();
+        this.setResizable(false);
     }
     
     public void UpdateWindow() {

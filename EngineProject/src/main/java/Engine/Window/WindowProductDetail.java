@@ -25,6 +25,7 @@ public class WindowProductDetail extends javax.swing.JDialog {
     public WindowProductDetail() {
         initComponents();
         this.setModal(true);
+        this.setResizable(false);
     }
     
     public void UpdateWindow() {

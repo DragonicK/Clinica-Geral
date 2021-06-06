@@ -1,5 +1,6 @@
 package Engine.Window;
 
+import Engine.Schedule;
 import Engine.Handler.PersonHandler;
 import Engine.Handler.RegionHandler;
 import Engine.Handler.ProductHandler;
@@ -7,11 +8,18 @@ import Engine.Handler.PatientHandler;
 import Engine.Handler.SupplierHandler;
 import Engine.Handler.ScheduleHandler;
 import Engine.Handler.EmployeeHandler;
+import Engine.Handler.TreatmentHandler;
 import Engine.Database.DBConfiguration;
 import Engine.Window.Observer.Changes;
 import Engine.Window.Observer.Notifier;
 import Engine.Window.Observer.NotificationMain;
 import Engine.Communication.DependencyRepository;
+
+import java.util.List;
+import java.util.Date;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import javax.swing.table.DefaultTableModel;
 
 public class WindowMain extends javax.swing.JFrame {
     private NotificationMain notification;
@@ -22,10 +30,14 @@ public class WindowMain extends javax.swing.JFrame {
     private WindowPatient windowPatient;
     private WindowEmployee windowEmployee;
     private WindowSchedule windowSchedule;
+    private WindowTreatment windowTreatment;
     private DependencyRepository dependencies;
+    private List<Schedule> schedules;
     
     public WindowMain() {
         initComponents();
+        
+        this.setResizable(false);
         
         var config = new DBConfiguration();
         config.Database = "engine";
@@ -52,10 +64,70 @@ public class WindowMain extends javax.swing.JFrame {
         dependencies.ScheduleHandler = new ScheduleHandler(config);
         dependencies.RegionHandler = new RegionHandler(config);
         dependencies.PersonHandler = new PersonHandler(config);
+        dependencies.TreatmentHandler = new TreatmentHandler(config);
+        
+        UpdateWindow();
     }
     
     public void UpdateWindow() {
+        var formatter = new SimpleDateFormat("dd/MM/yyyy");
+        var date = GetDateWithoutTimeUsingCalendar(); 
         
+        LabelSchedule.setText("Exibindo as consultas da data de hoje: " + formatter.format(date));
+        
+        LoadRecentSchedules();
+    }
+    
+    private void LoadRecentSchedules() {
+        var handler = dependencies.ScheduleHandler;
+        
+        if (handler != null) {
+            ClearTable();
+            
+            schedules = handler.FindByDate(GetDateWithoutTimeUsingCalendar());
+            
+            FillSchedule();
+        }
+    }
+    
+    private void ClearTable() {
+        var model = (DefaultTableModel)TableSchedule.getModel();
+        model.setRowCount(0);
+        
+        TableSchedule.revalidate();
+    }
+    
+    private void FillSchedule() {
+        if (schedules != null) {
+            var count = schedules.size();
+            var model = (DefaultTableModel)TableSchedule.getModel();
+            var formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            
+            for (var i = 0; i < count; i++) {
+                var schedule = schedules.get(i);
+                
+                Object[] row = {
+                    schedule.PatientName,
+                    schedule.PatientDocument,
+                    schedule.EmployeeName,
+                    formatter.format(schedule.Date),
+                    schedule.State == 0 ? "Aguardando" : "Finalizado"
+                };
+                
+                model.addRow(row);
+            }
+        }
+    }
+    
+    private Date GetDateWithoutTimeUsingCalendar() {
+        var calendar = Calendar.getInstance();
+        
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        
+        return calendar.getTime();
     }
     
     @SuppressWarnings("unchecked")
@@ -64,6 +136,7 @@ public class WindowMain extends javax.swing.JFrame {
 
         jScrollPane2 = new javax.swing.JScrollPane();
         TableSchedule = new javax.swing.JTable();
+        LabelSchedule = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemExit = new javax.swing.JMenuItem();
@@ -75,6 +148,7 @@ public class WindowMain extends javax.swing.JFrame {
         MenuItemEmployee = new javax.swing.JMenuItem();
         MenuItemRegion = new javax.swing.JMenuItem();
         MenuItemSchedule = new javax.swing.JMenuItem();
+        MenuItemTreatment = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gerenciamento de Clínica");
@@ -86,14 +160,14 @@ public class WindowMain extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nome", "CPF", "Colaborador", "Data"
+                "Nome", "CPF", "Colaborador", "Data", "Estado"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -105,12 +179,10 @@ public class WindowMain extends javax.swing.JFrame {
             }
         });
         TableSchedule.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        TableSchedule.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TableScheduleMouseClicked(evt);
-            }
-        });
         jScrollPane2.setViewportView(TableSchedule);
+
+        LabelSchedule.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        LabelSchedule.setText("Data");
 
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -193,6 +265,15 @@ public class WindowMain extends javax.swing.JFrame {
         });
         jMenu2.add(MenuItemSchedule);
 
+        MenuItemTreatment.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        MenuItemTreatment.setText("Tratamento");
+        MenuItemTreatment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MenuItemTreatmentActionPerformed(evt);
+            }
+        });
+        jMenu2.add(MenuItemTreatment);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -201,15 +282,19 @@ public class WindowMain extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(19, 19, 19))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 626, Short.MAX_VALUE)
+                    .addComponent(LabelSchedule, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(LabelSchedule)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(20, Short.MAX_VALUE))
         );
@@ -314,10 +399,6 @@ public class WindowMain extends javax.swing.JFrame {
         }  
     }//GEN-LAST:event_MenuItemEmployeeActionPerformed
 
-    private void TableScheduleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableScheduleMouseClicked
-
-    }//GEN-LAST:event_TableScheduleMouseClicked
-
     private void MenuItemScheduleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemScheduleActionPerformed
         if (windowSchedule == null) {
             windowSchedule = new WindowSchedule();
@@ -331,6 +412,20 @@ public class WindowMain extends javax.swing.JFrame {
             windowSchedule.setVisible(true);
         }  
     }//GEN-LAST:event_MenuItemScheduleActionPerformed
+
+    private void MenuItemTreatmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemTreatmentActionPerformed
+        if (windowTreatment == null) {
+            windowTreatment = new WindowTreatment();
+            windowTreatment.SetDependency(dependencies);
+            windowTreatment.setLocationRelativeTo(null);
+        }
+        
+        if (!windowTreatment.isVisible()) {
+            windowTreatment.ClearTable();
+            windowTreatment.LoadTreatments();
+            windowTreatment.setVisible(true);
+        } 
+    }//GEN-LAST:event_MenuItemTreatmentActionPerformed
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -365,6 +460,7 @@ public class WindowMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel LabelSchedule;
     private javax.swing.JMenuItem MenuItemEmployee;
     private javax.swing.JMenuItem MenuItemExit;
     private javax.swing.JMenuItem MenuItemPatient;
@@ -373,6 +469,7 @@ public class WindowMain extends javax.swing.JFrame {
     private javax.swing.JMenuItem MenuItemRegion;
     private javax.swing.JMenuItem MenuItemSchedule;
     private javax.swing.JMenuItem MenuItemSupplier;
+    private javax.swing.JMenuItem MenuItemTreatment;
     private javax.swing.JTable TableSchedule;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;

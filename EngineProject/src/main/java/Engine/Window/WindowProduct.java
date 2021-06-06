@@ -28,6 +28,8 @@ public class WindowProduct extends javax.swing.JFrame {
     public WindowProduct() {
         initComponents();
         
+        this.setResizable(false);
+        
         SetEnabledButtons(false);
     }
     
@@ -46,6 +48,7 @@ public class WindowProduct extends javax.swing.JFrame {
         
         if (handler != null) {
             products = handler.GetProducts();
+            SetResultsText();
             FillProducts(products);
         }
     }
@@ -95,9 +98,7 @@ public class WindowProduct extends javax.swing.JFrame {
     
     private void Find() {
         var handler = dependencies.ProductHandler;
-        
-        ClearTable();
-        
+                
         if (TextFind.getText().length() > 0) {
             products = handler.Find(TextFind.getText().trim());
         }
@@ -107,7 +108,21 @@ public class WindowProduct extends javax.swing.JFrame {
         
         SetEnabledButtons(false);
         
-        FillProducts(products);
+        ClearTable();
+        
+        SetResultsText();
+        
+        FillProducts(products);   
+    }
+    
+    private void SetResultsText() {
+        var size = 0;
+        
+        if (products != null) {
+            size = products.size();
+        }
+        
+        LabelResults.setText("Resultados retornados: " + size);
     }
     
     @SuppressWarnings("unchecked")
@@ -121,6 +136,7 @@ public class WindowProduct extends javax.swing.JFrame {
         ButtonEdit = new javax.swing.JButton();
         ButtonExclude = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        LabelResults = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemNew = new javax.swing.JMenuItem();
@@ -173,6 +189,7 @@ public class WindowProduct extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         jLabel1.setText("Pesquisar:");
 
+        ButtonEdit.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonEdit.setText("Editar");
         ButtonEdit.setEnabled(false);
         ButtonEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -181,6 +198,7 @@ public class WindowProduct extends javax.swing.JFrame {
             }
         });
 
+        ButtonExclude.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonExclude.setText("Excluir");
         ButtonExclude.setEnabled(false);
         ButtonExclude.addActionListener(new java.awt.event.ActionListener() {
@@ -192,6 +210,9 @@ public class WindowProduct extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Verdana", 2, 12)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Pressione ENTER para iniciar a pesquisa.");
+
+        LabelResults.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        LabelResults.setText("Resultados retornados: 0");
 
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -236,6 +257,11 @@ public class WindowProduct extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(20, 20, 20))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(17, 17, 17)
+                    .addComponent(LabelResults, javax.swing.GroupLayout.PREFERRED_SIZE, 624, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(20, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -246,13 +272,18 @@ public class WindowProduct extends javax.swing.JFrame {
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TextFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(26, 26, 26)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(59, 59, 59)
+                    .addComponent(LabelResults)
+                    .addContainerGap(406, Short.MAX_VALUE)))
         );
 
         pack();
@@ -264,7 +295,7 @@ public class WindowProduct extends javax.swing.JFrame {
                 "Produto",
                 JOptionPane.INFORMATION_MESSAGE);
     }
-        
+    
     private void MenuItemNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemNewActionPerformed
         if (detail == null) {
             detail = new WindowProductDetail();
@@ -272,7 +303,7 @@ public class WindowProduct extends javax.swing.JFrame {
             detail.setLocationRelativeTo(null);
         }
         
-        if (!detail.isVisible()) {           
+        if (!detail.isVisible()) {
             detail.SetOperationState(DBOperationState.Insert);
             detail.LoadSuppliers();
             detail.setVisible(true);
@@ -387,6 +418,7 @@ public class WindowProduct extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonEdit;
     private javax.swing.JButton ButtonExclude;
+    private javax.swing.JLabel LabelResults;
     private javax.swing.JMenuItem MenuItemExit;
     private javax.swing.JMenuItem MenuItemNew;
     private javax.swing.JTable TableProduct;

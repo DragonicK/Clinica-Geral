@@ -10,5 +10,6 @@ public enum Changes {
     Patient,
     Supplier,
     Employee,
-    Schedule
+    Schedule,
+    Treatment
 }

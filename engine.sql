@@ -11,7 +11,7 @@
  Target Server Version : 80025
  File Encoding         : 65001
 
- Date: 04/06/2021 07:47:32
+ Date: 06/06/2021 15:43:02
 */
 
 SET NAMES utf8mb4;
@@ -31,7 +31,7 @@ CREATE TABLE `address`  (
   INDEX `FK_AddressPersonId`(`PersonId`) USING BTREE,
   CONSTRAINT `FK_AddressCityId` FOREIGN KEY (`CityId`) REFERENCES `city` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_AddressPersonId` FOREIGN KEY (`PersonId`) REFERENCES `person` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of address
@@ -50,7 +50,7 @@ CREATE TABLE `city`  (
   PRIMARY KEY (`Id`) USING BTREE,
   INDEX `FK_CityCountryId`(`CountryId`) USING BTREE,
   CONSTRAINT `FK_CityCountryId` FOREIGN KEY (`CountryId`) REFERENCES `country` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of city
@@ -70,7 +70,7 @@ CREATE TABLE `contact`  (
   PRIMARY KEY (`Id`) USING BTREE,
   INDEX `FK_ContactPersonId`(`PersonId`) USING BTREE,
   CONSTRAINT `FK_ContactPersonId` FOREIGN KEY (`PersonId`) REFERENCES `person` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for country
@@ -80,7 +80,7 @@ CREATE TABLE `country`  (
   `Id` int(0) NOT NULL AUTO_INCREMENT,
   `Name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of country
@@ -101,7 +101,7 @@ CREATE TABLE `employee`  (
   PRIMARY KEY (`Id`) USING BTREE,
   INDEX `FK_EmployeePersonId`(`PersonId`) USING BTREE,
   CONSTRAINT `FK_EmployeePersonId` FOREIGN KEY (`PersonId`) REFERENCES `person` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of employee
@@ -121,7 +121,7 @@ CREATE TABLE `patient`  (
   INDEX `FK_PatientCompanionPersonId`(`CompanionPersonId`) USING BTREE,
   CONSTRAINT `FK_PatientCompanionPersonId` FOREIGN KEY (`CompanionPersonId`) REFERENCES `person` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_PatientPersonId` FOREIGN KEY (`PersonId`) REFERENCES `person` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of patient
@@ -139,7 +139,7 @@ CREATE TABLE `person`  (
   `Email` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Birthday` date NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of person
@@ -161,7 +161,7 @@ CREATE TABLE `product`  (
   PRIMARY KEY (`Id`) USING BTREE,
   INDEX `FK_ProductSupplierId`(`SupplierId`) USING BTREE,
   CONSTRAINT `FK_ProductSupplierId` FOREIGN KEY (`SupplierId`) REFERENCES `supplier` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for schedule
@@ -183,7 +183,7 @@ CREATE TABLE `schedule`  (
 -- ----------------------------
 -- Records of schedule
 -- ----------------------------
-INSERT INTO `schedule` VALUES (2, 1, 1, '2021-06-04 12:20:00', 0);
+INSERT INTO `schedule` VALUES (2, 1, 1, '2021-06-06 12:20:00', 1);
 
 -- ----------------------------
 -- Table structure for supplier
@@ -196,6 +196,39 @@ CREATE TABLE `supplier`  (
   PRIMARY KEY (`Id`) USING BTREE,
   INDEX `FK_SupplierPersonId`(`PersonId`) USING BTREE,
   CONSTRAINT `FK_SupplierPersonId` FOREIGN KEY (`PersonId`) REFERENCES `person` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for treatment
+-- ----------------------------
+DROP TABLE IF EXISTS `treatment`;
+CREATE TABLE `treatment`  (
+  `Id` int(0) NOT NULL AUTO_INCREMENT,
+  `ScheduleId` int(0) NULL DEFAULT 0,
+  PRIMARY KEY (`Id`) USING BTREE,
+  UNIQUE INDEX `FK_TreatmentScheduleId`(`ScheduleId`) USING BTREE,
+  CONSTRAINT `FK_TreatmentScheduleId` FOREIGN KEY (`ScheduleId`) REFERENCES `schedule` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of treatment
+-- ----------------------------
+INSERT INTO `treatment` VALUES (1, 2);
+
+-- ----------------------------
+-- Table structure for treatment_product
+-- ----------------------------
+DROP TABLE IF EXISTS `treatment_product`;
+CREATE TABLE `treatment_product`  (
+  `Id` int(0) NOT NULL AUTO_INCREMENT,
+  `TreatmentId` int(0) NOT NULL,
+  `ProductId` int(0) NULL DEFAULT NULL,
+  `ProductCount` int(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`Id`) USING BTREE,
+  INDEX `FK_TreatmentProductTreatmentId`(`TreatmentId`) USING BTREE,
+  INDEX `FK_TreatmentProductProductId`(`ProductId`) USING BTREE,
+  CONSTRAINT `FK_TreatmentProductProductId` FOREIGN KEY (`ProductId`) REFERENCES `product` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_TreatmentProductTreatmentId` FOREIGN KEY (`TreatmentId`) REFERENCES `treatment` (`Id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -28,6 +28,8 @@ public class WindowPerson extends javax.swing.JFrame {
     public WindowPerson() {
         initComponents();
         
+        this.setResizable(false);
+        
         RadioGroup.add(RadioDocument);
         RadioGroup.add(RadioName);
         
@@ -59,6 +61,7 @@ public class WindowPerson extends javax.swing.JFrame {
         
         if (handler != null) {
             persons = handler.GetPersons();
+            SetResultsText();
             FillPersons(persons);
         }
     }
@@ -118,7 +121,19 @@ public class WindowPerson extends javax.swing.JFrame {
         
         ClearTable();
         
-        FillPersons(persons);
+        SetResultsText();
+        
+        FillPersons(persons);          
+    }
+    
+    private void SetResultsText() {
+        var size = 0;
+        
+        if (persons != null) {
+            size = persons.size();
+        }
+        
+        LabelResults.setText("Resultados retornados: " + size);
     }
     
     private void ShowMessage(String message) {
@@ -142,6 +157,7 @@ public class WindowPerson extends javax.swing.JFrame {
         ButtonExclude = new javax.swing.JButton();
         RadioDocument = new javax.swing.JRadioButton();
         RadioName = new javax.swing.JRadioButton();
+        LabelResults = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemNew = new javax.swing.JMenuItem();
@@ -198,6 +214,7 @@ public class WindowPerson extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(TablePerson);
 
+        ButtonEdit.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonEdit.setText("Editar");
         ButtonEdit.setEnabled(false);
         ButtonEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -206,6 +223,7 @@ public class WindowPerson extends javax.swing.JFrame {
             }
         });
 
+        ButtonExclude.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonExclude.setText("Excluir");
         ButtonExclude.setEnabled(false);
         ButtonExclude.addActionListener(new java.awt.event.ActionListener() {
@@ -220,6 +238,9 @@ public class WindowPerson extends javax.swing.JFrame {
 
         RadioName.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         RadioName.setText("Nome");
+
+        LabelResults.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        LabelResults.setText("Resultados retornados: 0");
 
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -252,22 +273,24 @@ public class WindowPerson extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
-                    .addComponent(TextFind)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(RadioDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(RadioName, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(8, 8, 8)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(TextFind)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(RadioDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(RadioName, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(8, 8, 8))
+                        .addComponent(LabelResults, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2)))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -282,12 +305,14 @@ public class WindowPerson extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TextFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(LabelResults)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
@@ -332,7 +357,7 @@ public class WindowPerson extends javax.swing.JFrame {
                 detail.Clear();
                 detail.SetOperationState(DBOperationState.Update);
                 detail.LoadCities();
-                detail.SetPerson(person); 
+                detail.SetPerson(person);
                 detail.setVisible(true);
             }
         }
@@ -418,6 +443,7 @@ public class WindowPerson extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonEdit;
     private javax.swing.JButton ButtonExclude;
+    private javax.swing.JLabel LabelResults;
     private javax.swing.JMenuItem MenuItemExit;
     private javax.swing.JMenuItem MenuItemNew;
     private javax.swing.JRadioButton RadioDocument;

@@ -24,6 +24,8 @@ public class WindowEmployee extends javax.swing.JFrame {
     public WindowEmployee() {
         initComponents();
         
+        this.setResizable(false);
+        
         RadioGroup.add(RadioDocument);
         RadioGroup.add(RadioName);
         
@@ -69,6 +71,7 @@ public class WindowEmployee extends javax.swing.JFrame {
         
         if (handler != null) {
             employees = handler.GetEmployees();
+            SetResultsText();
             FillEmployees(employees);
         }
     }
@@ -111,9 +114,21 @@ public class WindowEmployee extends javax.swing.JFrame {
         
         ClearTable();
         
+        SetResultsText();
+        
         FillEmployees(employees);
     }
     
+    private void SetResultsText() {
+        var size = 0;
+        
+        if (employees != null) {
+            size = employees.size();
+        }
+        
+        LabelResults.setText("Resultados retornados: " + size);
+    }
+        
     private void ShowErrorMessage(String message) {
         MessageBox.Show(this,
                 message,
@@ -137,6 +152,7 @@ public class WindowEmployee extends javax.swing.JFrame {
         RadioDocument = new javax.swing.JRadioButton();
         RadioName = new javax.swing.JRadioButton();
         jLabel2 = new javax.swing.JLabel();
+        LabelResults = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemNew = new javax.swing.JMenuItem();
@@ -145,6 +161,7 @@ public class WindowEmployee extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
+        ButtonEdit.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonEdit.setText("Editar");
         ButtonEdit.setEnabled(false);
         ButtonEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -153,6 +170,7 @@ public class WindowEmployee extends javax.swing.JFrame {
             }
         });
 
+        ButtonExclude.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonExclude.setText("Excluir");
         ButtonExclude.setEnabled(false);
         ButtonExclude.addActionListener(new java.awt.event.ActionListener() {
@@ -215,6 +233,9 @@ public class WindowEmployee extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Pressione ENTER para iniciar a pesquisa.");
 
+        LabelResults.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        LabelResults.setText("Resultados retornados: 0");
+
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
@@ -265,6 +286,11 @@ public class WindowEmployee extends javax.swing.JFrame {
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(8, 8, 8))))
                 .addContainerGap(18, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(25, 25, 25)
+                    .addComponent(LabelResults, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(25, 25, 25)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -277,13 +303,18 @@ public class WindowEmployee extends javax.swing.JFrame {
                     .addComponent(RadioName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TextFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(37, 37, 37)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(77, 77, 77)
+                    .addComponent(LabelResults)
+                    .addContainerGap(415, Short.MAX_VALUE)))
         );
 
         pack();
@@ -292,13 +323,13 @@ public class WindowEmployee extends javax.swing.JFrame {
     private void ButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonEditActionPerformed
         if (selectedRow >= 0) {
             var employee = employees.get(selectedRow);
-
+            
             if (detail == null) {
                 detail = new WindowEmployeeDetail();
                 detail.SetDependency(dependencies);
                 detail.setLocationRelativeTo(null);
             }
-
+            
             if (!detail.isVisible()) {
                 detail.Clear();
                 detail.ClearPersons();
@@ -365,7 +396,7 @@ public class WindowEmployee extends javax.swing.JFrame {
             detail.Clear();
             detail.ClearPersons();
             detail.LoadPersons();
-            detail.SetOperationState(DBOperationState.Insert);    
+            detail.SetOperationState(DBOperationState.Insert);
             detail.setVisible(true);
         }
     }//GEN-LAST:event_MenuItemNewActionPerformed
@@ -416,6 +447,7 @@ public class WindowEmployee extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonEdit;
     private javax.swing.JButton ButtonExclude;
+    private javax.swing.JLabel LabelResults;
     private javax.swing.JMenuItem MenuItemExit;
     private javax.swing.JMenuItem MenuItemNew;
     private javax.swing.JRadioButton RadioDocument;

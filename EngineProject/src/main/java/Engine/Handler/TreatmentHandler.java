@@ -1,30 +1,30 @@
 package Engine.Handler;
 
-import Engine.Schedule;
-import Engine.Database.DBSchedule;
 import Engine.Database.DBConfiguration;
-import java.util.Date;
+import Engine.Database.DBTreatment;
+import Engine.Treatment;
 
+import java.util.Date;
 import java.util.List;
 
-public class ScheduleHandler implements IScheduleHandler {
+public class TreatmentHandler implements ITreatmentHandler {
     private final DBConfiguration configuration;
     
-    public ScheduleHandler(DBConfiguration dbConfiguration) {
+    public TreatmentHandler(DBConfiguration dbConfiguration) {
         configuration = dbConfiguration;
     }
     
     @Override
-    public List<Schedule> GetSchedules() {
-        var db = new DBSchedule(configuration);
+    public List<Treatment> GetTreatments() {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                var list = db.GetSchedule();
+                var result = db.GetTreatments();
                 db.Close();
                 
-                return list;
+                return result;
             }
         }
         
@@ -32,60 +32,55 @@ public class ScheduleHandler implements IScheduleHandler {
     }
     
     @Override
-    public boolean CanDelete(Schedule schedule) {
-        return true;
-    }
-    
-    @Override
-    public void Delete(Schedule schedule) {
-        var db = new DBSchedule(configuration);
+    public void Delete(Treatment treatment) {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                db.Delete(schedule);
+                db.Delete(treatment);
                 db.Close();
             }
         }
     }
     
     @Override
-    public void Update(Schedule schedule) {
-        var db = new DBSchedule(configuration);
+    public void Update(Treatment treatment) {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                db.Update(schedule);
+                db.Update(treatment);
                 db.Close();
             }
         }
     }
     
     @Override
-    public void Put(Schedule schedule) {
-        var db = new DBSchedule(configuration);
+    public void Put(Treatment treatment) {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                db.Put(schedule);
+                db.Put(treatment);
                 db.Close();
             }
         }
     }
     
     @Override
-    public List<Schedule> FindByPatientDocument(String document) {
-        var db = new DBSchedule(configuration);
+    public List<Treatment> FindByEmployeeDocument(String document) {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                var list = db.GetByPatientDocument(document);
+                var result = db.GetByEmployeeDocument(document);
                 db.Close();
                 
-                return list;
+                return result;
             }
         }
         
@@ -93,16 +88,16 @@ public class ScheduleHandler implements IScheduleHandler {
     }
     
     @Override
-    public List<Schedule> FindByPatientName(String name) {
-        var db = new DBSchedule(configuration);
+    public List<Treatment> FindByEmployeeName(String name) {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                var list = db.GetByPatientName(name);
+                var result = db.GetByEmployeeName(name);
                 db.Close();
                 
-                return list;
+                return result;
             }
         }
         
@@ -110,16 +105,16 @@ public class ScheduleHandler implements IScheduleHandler {
     }
     
     @Override
-    public List<Schedule> FindByEmployeeDocument(String document) {
-        var db = new DBSchedule(configuration);
+    public List<Treatment> FindByPatientDocument(String document) {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                var list = db.GetByEmployeeDocument(document);
+                var result = db.GetByPatientDocument(document);
                 db.Close();
                 
-                return list;
+                return result;
             }
         }
         
@@ -127,16 +122,16 @@ public class ScheduleHandler implements IScheduleHandler {
     }
     
     @Override
-    public List<Schedule> FindByEmployeeName(String name) {
-        var db = new DBSchedule(configuration);
+    public List<Treatment> FindByPatientName(String name) {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                var list = db.GetByEmployeeName(name);
+                var result = db.GetByPatientName(name);
                 db.Close();
                 
-                return list;
+                return result;
             }
         }
         
@@ -144,19 +139,19 @@ public class ScheduleHandler implements IScheduleHandler {
     }
     
     @Override
-    public   List<Schedule> FindByDate(Date date) {
-        var db = new DBSchedule(configuration);
+    public List<Treatment> FindByDate(Date startDate, Date endDate) {
+        var db = new DBTreatment(configuration);
         var error = db.Open();
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                var list = db.GetScheduleFromDate(date);
+                var result = db.GetTreatmentsFromDate(startDate, endDate);
                 db.Close();
                 
-                return list;
+                return result;
             }
         }
         
-        return null;
+        return null;  
     }
 }

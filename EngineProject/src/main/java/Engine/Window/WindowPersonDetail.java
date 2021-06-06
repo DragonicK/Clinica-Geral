@@ -38,6 +38,7 @@ public class WindowPersonDetail extends javax.swing.JDialog {
     public WindowPersonDetail() {
         initComponents();
         this.setModal(true);
+        this.setResizable(false);
         
         selectedContact = -1;
         

@@ -25,6 +25,8 @@ public class WindowPatient extends javax.swing.JFrame {
     public WindowPatient() {
         initComponents();
         
+        this.setResizable(false);
+        
         RadioGroup.add(RadioDocument);
         RadioGroup.add(RadioName);
         
@@ -70,6 +72,7 @@ public class WindowPatient extends javax.swing.JFrame {
         
         if (handler != null) {
             patients = handler.GetPatients();
+            SetResultsText();
             FillPatients(patients);
         }
     }
@@ -111,7 +114,19 @@ public class WindowPatient extends javax.swing.JFrame {
         
         ClearTable();
         
-        FillPatients(patients);
+        SetResultsText();
+        
+        FillPatients(patients);            
+    }
+    
+    private void SetResultsText() {
+        var size = 0;
+        
+        if (patients != null) {
+            size = patients.size();
+        }
+        
+        LabelResults.setText("Resultados retornados: " + size);
     }
     
     private void ShowMessage(String message) {
@@ -135,6 +150,7 @@ public class WindowPatient extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         ButtonEdit = new javax.swing.JButton();
         ButtonExclude = new javax.swing.JButton();
+        LabelResults = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemNew = new javax.swing.JMenuItem();
@@ -214,6 +230,9 @@ public class WindowPatient extends javax.swing.JFrame {
             }
         });
 
+        LabelResults.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        LabelResults.setText("Resultados retornados: 0");
+
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
@@ -262,7 +281,8 @@ public class WindowPatient extends javax.swing.JFrame {
                             .addComponent(RadioName, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(132, 132, 132)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(8, 8, 8))))
+                            .addGap(8, 8, 8))
+                        .addComponent(LabelResults, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -276,13 +296,15 @@ public class WindowPatient extends javax.swing.JFrame {
                     .addComponent(RadioName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TextFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(LabelResults)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
@@ -320,10 +342,10 @@ public class WindowPatient extends javax.swing.JFrame {
             detail.setLocationRelativeTo(null);
         }
         
-        if (!detail.isVisible()) {            
+        if (!detail.isVisible()) {
             detail.Clear();
             detail.ClearPersons();
-            detail.SetOperationState(DBOperationState.Insert);          
+            detail.SetOperationState(DBOperationState.Insert);
             detail.LoadPersons();
             detail.setVisible(true);
         }
@@ -347,7 +369,7 @@ public class WindowPatient extends javax.swing.JFrame {
                 detail.setLocationRelativeTo(null);
             }
             
-            if (!detail.isVisible()) {               
+            if (!detail.isVisible()) {
                 detail.Clear();
                 detail.ClearPersons();
                 detail.LoadPersons();
@@ -412,6 +434,7 @@ public class WindowPatient extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonEdit;
     private javax.swing.JButton ButtonExclude;
+    private javax.swing.JLabel LabelResults;
     private javax.swing.JMenuItem MenuItemExit;
     private javax.swing.JMenuItem MenuItemNew;
     private javax.swing.JRadioButton RadioDocument;

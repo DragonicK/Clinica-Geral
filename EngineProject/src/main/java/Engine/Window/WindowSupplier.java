@@ -23,13 +23,15 @@ public class WindowSupplier extends javax.swing.JFrame {
     public WindowSupplier() {
         initComponents();
         
+        this.setResizable(false);
+        
         RadioGroup.add(RadioDocument);
         RadioGroup.add(RadioName);
         RadioGroup.add(RadioFantasyName);
         
         SetEnabledButtons(false);
     }
-        
+    
     public void SetDependency(DependencyRepository dependency) {
         dependencies = dependency;
         
@@ -37,7 +39,7 @@ public class WindowSupplier extends javax.swing.JFrame {
         notification.Add(Changes.Person);
         notification.Add(Changes.Supplier);
         
-        dependencies.Notifier.Add(notification);       
+        dependencies.Notifier.Add(notification);
     }
     
     public void ClearTable() {
@@ -54,6 +56,7 @@ public class WindowSupplier extends javax.swing.JFrame {
         
         if (handler != null) {
             suppliers = handler.GetSuppliers();
+            SetResultsText();
             FillSuppliers(suppliers);
         }
     }
@@ -118,7 +121,19 @@ public class WindowSupplier extends javax.swing.JFrame {
         
         ClearTable();
         
+        SetResultsText();
+       
         FillSuppliers(suppliers);
+    }
+    
+    private void SetResultsText() {
+        var size = 0;
+        
+        if (suppliers != null) {
+            size = suppliers.size();
+        }
+        
+        LabelResults.setText("Resultados retornados: " + size);
     }
     
     private void ShowMessage(String message) {
@@ -143,6 +158,7 @@ public class WindowSupplier extends javax.swing.JFrame {
         ButtonEdit = new javax.swing.JButton();
         ButtonExclude = new javax.swing.JButton();
         RadioFantasyName = new javax.swing.JRadioButton();
+        LabelResults = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemNew = new javax.swing.JMenuItem();
@@ -206,6 +222,7 @@ public class WindowSupplier extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Pressione ENTER para iniciar a pesquisa.");
 
+        ButtonEdit.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonEdit.setText("Editar");
         ButtonEdit.setEnabled(false);
         ButtonEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -214,6 +231,7 @@ public class WindowSupplier extends javax.swing.JFrame {
             }
         });
 
+        ButtonExclude.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonExclude.setText("Excluir");
         ButtonExclude.setEnabled(false);
         ButtonExclude.addActionListener(new java.awt.event.ActionListener() {
@@ -224,6 +242,9 @@ public class WindowSupplier extends javax.swing.JFrame {
 
         RadioFantasyName.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         RadioFantasyName.setText("Nome Fantasia");
+
+        LabelResults.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        LabelResults.setText("Resultados retornados: 0");
 
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -274,7 +295,8 @@ public class WindowSupplier extends javax.swing.JFrame {
                             .addComponent(RadioFantasyName, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(8, 8, 8))))
+                            .addGap(8, 8, 8))
+                        .addComponent(LabelResults, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -289,13 +311,15 @@ public class WindowSupplier extends javax.swing.JFrame {
                     .addComponent(RadioFantasyName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TextFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(LabelResults, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addGap(17, 17, 17))
         );
 
         pack();
@@ -333,7 +357,7 @@ public class WindowSupplier extends javax.swing.JFrame {
             detail.setLocationRelativeTo(null);
         }
         
-        if (!detail.isVisible()) {           
+        if (!detail.isVisible()) {
             detail.Clear();
             detail.SetOperationState(DBOperationState.Insert);
             detail.ClearPersons();
@@ -360,7 +384,7 @@ public class WindowSupplier extends javax.swing.JFrame {
                 detail.setLocationRelativeTo(null);
             }
             
-            if (!detail.isVisible()) {                
+            if (!detail.isVisible()) {
                 detail.Clear();
                 detail.ClearPersons();
                 detail.LoadPersons();
@@ -425,6 +449,7 @@ public class WindowSupplier extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonEdit;
     private javax.swing.JButton ButtonExclude;
+    private javax.swing.JLabel LabelResults;
     private javax.swing.JMenuItem MenuItemExit;
     private javax.swing.JMenuItem MenuItemNew;
     private javax.swing.JRadioButton RadioDocument;

@@ -24,6 +24,7 @@ public class WindowSupplierDetail extends javax.swing.JDialog  {
     public WindowSupplierDetail() {
         initComponents();
         this.setModal(true);
+        this.setResizable(false);
             
         RadioGroup.add(RadioDocument);
         RadioGroup.add(RadioName);
