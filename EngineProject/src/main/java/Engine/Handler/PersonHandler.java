@@ -7,6 +7,8 @@ import Engine.Database.DBPerson;
 import Engine.Database.DBAddress;
 import Engine.Database.DBContact;
 import Engine.Database.DBSupplier;
+import Engine.Database.DBPatient;
+import Engine.Database.DBEmployee;
 import Engine.Database.DBConfiguration;
 
 import java.util.List;
@@ -269,15 +271,32 @@ public class PersonHandler implements IPersonHandler {
     }
     
     private boolean IsPersonUsedAsPatient(Person person) {
-        // TODO
-        // Verificar se id de pessoa existe na tabela patient.
-        return false;
+        var db = new DBPatient(configuration);
+        var error = db.Open();
+        var result = false;
+        
+        if (error.Code == 0) {
+            if (db.IsOpen()) {
+                result = !db.IsPersonUsed(person.Id);
+                db.Close();
+            }
+        }
+        
+        return result;
     }
     
     private boolean IsPersonUsedAsEmployee(Person person) {
-        // TODO
-        // Verificar se id de pessoa existe na tabela employee.
-        return false;
-    }
-    
+        var db = new DBEmployee(configuration);
+        var error = db.Open();
+        var result = false;
+        
+        if (error.Code == 0) {
+            if (db.IsOpen()) {
+                result = !db.IsPersonUsed(person.Id);
+                db.Close();
+            }
+        }
+        
+        return result;
+    }    
 }

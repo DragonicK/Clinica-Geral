@@ -15,7 +15,7 @@ public class DBPatient extends DBTemplate {
         connection = new DBConnection(dbConfiguration);
     }
     
-    public boolean IsPersonAsPatient(int personId) {
+    public boolean IsPersonUsed(int personId) {
         var query = "SELECT Id FROM Patient WHERE PersonId = ?";
         
         var command = new DBCommand(connection);

@@ -17,6 +17,7 @@ public class WindowSchedule extends javax.swing.JFrame {
     private DependencyRepository dependencies;
     private NotificationSchedule notification;
     private WindowScheduleDetail detail;
+    private WindowTreatmentDetail treatmentDetail;
     private List<Schedule> schedules;
     private int selectedRow;
     
@@ -32,6 +33,7 @@ public class WindowSchedule extends javax.swing.JFrame {
         RadioPerson.add(RadioEmployee);
         
         SetEnabledButtons(false);
+        ButtonFinish.setEnabled(false);
     }
     
     public void SetDependency(DependencyRepository repository) {
@@ -111,6 +113,7 @@ public class WindowSchedule extends javax.swing.JFrame {
         }
         
         SetEnabledButtons(false);
+        ButtonFinish.setEnabled(false);
         
         ClearTable();
         
@@ -192,13 +195,14 @@ public class WindowSchedule extends javax.swing.JFrame {
         RadioPatient = new javax.swing.JRadioButton();
         RadioEmployee = new javax.swing.JRadioButton();
         LabelResults = new javax.swing.JLabel();
+        ButtonFinish = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         MenuItemNew = new javax.swing.JMenuItem();
         MenuItemExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Agendamento");
+        setTitle("Consulta");
         setResizable(false);
 
         TableSchedule.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -283,11 +287,20 @@ public class WindowSchedule extends javax.swing.JFrame {
         LabelResults.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         LabelResults.setText("Resultados retornados: 0");
 
+        ButtonFinish.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        ButtonFinish.setText("Finalizar Consulta");
+        ButtonFinish.setEnabled(false);
+        ButtonFinish.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonFinishActionPerformed(evt);
+            }
+        });
+
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
         MenuItemNew.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        MenuItemNew.setText("Novo Agendamento");
+        MenuItemNew.setText("Nova Consulta");
         MenuItemNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MenuItemNewActionPerformed(evt);
@@ -316,6 +329,8 @@ public class WindowSchedule extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(ButtonFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -365,7 +380,8 @@ public class WindowSchedule extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ButtonExclude, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ButtonFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(20, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -382,12 +398,20 @@ public class WindowSchedule extends javax.swing.JFrame {
         int row = source.rowAtPoint( evt.getPoint() );
         
         SetEnabledButtons(false);
+        ButtonFinish.setEnabled(false);
         
         selectedRow = -1;
         
         if (row >= 0 && schedules.size() > 0) {
             SetEnabledButtons(true);
             selectedRow = row;
+            
+            var schedule = schedules.get(selectedRow);
+            
+            // ScheduleState.Waiting
+            if (schedule.State == 0) {
+                ButtonFinish.setEnabled(true);
+            }
         }
     }//GEN-LAST:event_TableScheduleMouseClicked
 
@@ -427,7 +451,7 @@ public class WindowSchedule extends javax.swing.JFrame {
                 dependencies.Notifier.Notify(Changes.Schedule);
             }
             else {
-                ShowErrorMessage("Este agendamento está vinculado com um tratamento finalizado e não pode ser excluído.");
+                ShowErrorMessage("Esta consulta está vinculado com um tratamento finalizado e não pode ser excluído.");
             }
         }
     }//GEN-LAST:event_ButtonExcludeActionPerformed
@@ -442,6 +466,14 @@ public class WindowSchedule extends javax.swing.JFrame {
             Find();
         }
     }//GEN-LAST:event_TextFindKeyPressed
+
+    private void MenuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemExitActionPerformed
+        this.setVisible(false);
+        
+        if (detail != null) {
+            detail.setVisible(false);
+        }
+    }//GEN-LAST:event_MenuItemExitActionPerformed
 
     private void MenuItemNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemNewActionPerformed
         if (detail == null) {
@@ -459,13 +491,24 @@ public class WindowSchedule extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_MenuItemNewActionPerformed
 
-    private void MenuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemExitActionPerformed
-        this.setVisible(false);
-        
-        if (detail != null) {
-            detail.setVisible(false);
+    private void ButtonFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonFinishActionPerformed
+        if (selectedRow >= 0){
+            var schedule = schedules.get(selectedRow);
+            
+            if (treatmentDetail == null) {
+                treatmentDetail = new WindowTreatmentDetail();
+                treatmentDetail.SetDependency(dependencies);
+                treatmentDetail.setLocationRelativeTo(null);
+            }
+            
+            if (!treatmentDetail.isVisible()) {
+                treatmentDetail.Clear();
+                treatmentDetail.SetOperationState(DBOperationState.Insert);
+                treatmentDetail.SetSchedule(schedule);
+                treatmentDetail.setVisible(true);
+            }
         }
-    }//GEN-LAST:event_MenuItemExitActionPerformed
+    }//GEN-LAST:event_ButtonFinishActionPerformed
     
     /**
      * @param args the command line arguments
@@ -505,6 +548,7 @@ public class WindowSchedule extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonEdit;
     private javax.swing.JButton ButtonExclude;
+    private javax.swing.JButton ButtonFinish;
     private javax.swing.JLabel LabelResults;
     private javax.swing.JMenuItem MenuItemExit;
     private javax.swing.JMenuItem MenuItemNew;

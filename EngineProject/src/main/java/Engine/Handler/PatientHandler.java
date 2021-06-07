@@ -1,8 +1,9 @@
 package Engine.Handler;
 
 import Engine.Patient;
-import Engine.Database.DBConfiguration;
 import Engine.Database.DBPatient;
+import Engine.Database.DBSchedule;
+import Engine.Database.DBConfiguration;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class PatientHandler implements IPatientHandler {
         
         if (error.Code == 0) {
             if (db.IsOpen()) {
-                result = !db.IsPersonAsPatient(personId);
+                result = !db.IsPersonUsed(personId);
                 db.Close();
             }
         }
@@ -31,7 +32,18 @@ public class PatientHandler implements IPatientHandler {
     
     @Override
     public boolean CanDelete(Patient patient) {
-        return true;
+        var db = new DBSchedule(configuration);
+        var error = db.Open();
+        var result = false;
+        
+        if (error.Code == 0) {
+            if (db.IsOpen()) {
+                result = !db.IsPatientUsed(patient.Id);
+                db.Close();
+            }
+        }
+        
+        return result;
     }
     
     @Override

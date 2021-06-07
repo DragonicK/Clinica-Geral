@@ -3,6 +3,7 @@ package Engine.Handler;
 import Engine.Employee;
 import Engine.Database.DBEmployee;
 import Engine.Database.DBConfiguration;
+import Engine.Database.DBSchedule;
 
 import java.util.List;
 
@@ -31,8 +32,19 @@ public class EmployeeHandler implements IEmployeeHandler {
     }
     
     @Override
-    public boolean CanDelete(Employee employee) {
-        return true;
+    public boolean CanDelete(Employee employee) {   
+        var db = new DBSchedule(configuration);
+        var error = db.Open();
+        var result = false;
+        
+        if (error.Code == 0) {
+            if (db.IsOpen()) {
+                result = !db.IsEmployeeUsed(employee.Id);
+                db.Close();
+            }
+        }
+        
+        return result;
     }
     
     @Override

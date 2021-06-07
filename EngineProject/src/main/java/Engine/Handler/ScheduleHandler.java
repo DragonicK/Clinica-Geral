@@ -2,6 +2,7 @@ package Engine.Handler;
 
 import Engine.Schedule;
 import Engine.Database.DBSchedule;
+import Engine.Database.DBTreatment;
 import Engine.Database.DBConfiguration;
 import java.util.Date;
 
@@ -12,6 +13,23 @@ public class ScheduleHandler implements IScheduleHandler {
     
     public ScheduleHandler(DBConfiguration dbConfiguration) {
         configuration = dbConfiguration;
+    }
+    
+    @Override
+    public Schedule Get(int id) {
+        var db = new DBSchedule(configuration);
+        var error = db.Open();
+        
+        if (error.Code == 0) {
+            if (db.IsOpen()) {
+                var schedule = db.Get(id);
+                db.Close();
+                
+                return schedule;
+            }
+        }
+        
+        return null;
     }
     
     @Override
@@ -33,7 +51,18 @@ public class ScheduleHandler implements IScheduleHandler {
     
     @Override
     public boolean CanDelete(Schedule schedule) {
-        return true;
+        var db = new DBTreatment(configuration);
+        var error = db.Open();
+        var result = false;
+        
+        if (error.Code == 0) {
+            if (db.IsOpen()) {
+                result = !db.IsScheduleUsed(schedule.Id);
+                db.Close();
+            }
+        }
+        
+        return result;
     }
     
     @Override

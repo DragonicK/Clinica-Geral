@@ -73,7 +73,7 @@ public class WindowMain extends javax.swing.JFrame {
         var formatter = new SimpleDateFormat("dd/MM/yyyy");
         var date = GetDateWithoutTimeUsingCalendar(); 
         
-        LabelSchedule.setText("Exibindo as consultas da data de hoje: " + formatter.format(date));
+        LabelSchedule.setText("Exibindo as consultas abertas a partir da data de hoje: " + formatter.format(date));
         
         LoadRecentSchedules();
     }
@@ -257,7 +257,7 @@ public class WindowMain extends javax.swing.JFrame {
         jMenu2.add(MenuItemRegion);
 
         MenuItemSchedule.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        MenuItemSchedule.setText("Agendamento");
+        MenuItemSchedule.setText("Consulta");
         MenuItemSchedule.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MenuItemScheduleActionPerformed(evt);

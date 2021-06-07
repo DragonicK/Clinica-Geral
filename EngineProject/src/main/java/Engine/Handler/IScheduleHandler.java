@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Date;
 
 public interface IScheduleHandler {   
+    Schedule Get(int id);
     List<Schedule> GetSchedules();
     List<Schedule> FindByDate(Date date);
     List<Schedule> FindByPatientDocument(String document);

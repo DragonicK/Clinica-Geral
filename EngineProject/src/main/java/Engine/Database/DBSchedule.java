@@ -1,7 +1,7 @@
 package Engine.Database;
 
-import Engine.Common.Strings;
 import Engine.Schedule;
+import Engine.Common.Strings;
 import Engine.Database.MySQL.DBCommand;
 import Engine.Database.MySQL.DBConnection;
 
@@ -14,6 +14,78 @@ public class DBSchedule extends DBTemplate {
     public DBSchedule(DBConfiguration dbConfiguration) {
         configuration = dbConfiguration;
         connection = new DBConnection(dbConfiguration);
+    }
+    
+    public boolean IsPatientUsed(int patientId) {
+        var query = "SELECT Id FROM Schedule WHERE PatientId = ?";
+        var command = new DBCommand(connection);
+        var error = command.CreateQuery(query);
+        var result = false;
+        
+        if (error.Code == 0) {
+            command.AddParameter(patientId, DBType.Int32);
+            
+            var reader = command.ExecuteReader();
+            result = reader.MoveNext();
+            
+            reader.Close();
+            command.Close();
+        }
+        
+        return result;
+    }
+    
+    public boolean IsEmployeeUsed(int employeeId) {
+        var query = "SELECT Id FROM Schedule WHERE EmployeeId = ?";
+        var command = new DBCommand(connection);
+        var error = command.CreateQuery(query);
+        var result = false;
+        
+        if (error.Code == 0) {
+            command.AddParameter(employeeId, DBType.Int32);
+            
+            var reader = command.ExecuteReader();
+            result = reader.MoveNext();
+            
+            reader.Close();
+            command.Close();
+        }
+        
+        return result;
+    }
+    
+    public Schedule Get(int id) {
+        var query = "SELECT Schedule.*, PatientPerson.Name AS PatientName, PatientPerson.Document AS PatientDocument, EmployeePerson.Name AS EmployeeName FROM Schedule ";
+        query += "INNER JOIN Employee ";
+        query += "INNER JOIN Person AS PatientPerson ON PatientId = PatientPerson.Id ";
+        query += "INNER JOIN Person as EmployeePerson ON Employee.PersonId = EmployeePerson.Id ";
+        query += "WHERE Schedule.Id = ?";
+        
+        var command = new DBCommand(connection);
+        var error = command.CreateQuery(query);
+        var schedule = new Schedule();
+        
+        if (error.Code == 0) {
+            command.AddParameter(id, DBType.Int32);
+            
+            var reader = command.ExecuteReader();
+            
+            if (reader.MoveNext()){
+                schedule.Id = (int)reader.GetData("Id", DBType.Int32);
+                schedule.PatientId= (int)reader.GetData("PatientId", DBType.Int32);
+                schedule.EmployeeId = (int)reader.GetData("EmployeeId", DBType.Int32);
+                schedule.Date = (Date)reader.GetData("Date", DBType.Date);
+                schedule.State = (byte)reader.GetData("State", DBType.Byte);
+                schedule.PatientName = (String)reader.GetData("PatientName", DBType.String);
+                schedule.PatientDocument = (String)reader.GetData("PatientDocument", DBType.String);
+                schedule.EmployeeName = (String)reader.GetData("EmployeeName", DBType.String);
+            }
+            
+            reader.Close();
+            command.Close();
+        }
+        
+        return schedule;
     }
     
     public void Delete(Schedule schedule) {
@@ -31,7 +103,7 @@ public class DBSchedule extends DBTemplate {
     }
     
     public void Put(Schedule schedule) {
-        var query = "INSERT INTO Schedule (PatientId, EmployeeId, Date) VALUES (?, ?, ?)";
+        var query = "INSERT INTO Schedule (PatientId, EmployeeId, Date, State) VALUES (?, ?, ?, ?)";
         
         var command = new DBCommand(connection);
         var error = command.CreateQuery(query);
@@ -40,6 +112,7 @@ public class DBSchedule extends DBTemplate {
             command.AddParameter(schedule.PatientId, DBType.Int32);
             command.AddParameter(schedule.EmployeeId, DBType.Int32);
             command.AddParameter(schedule.Date, DBType.Date);
+            command.AddParameter(0, DBType.Byte);
             
             command.ExecuteQuery();
         }
@@ -80,13 +153,13 @@ public class DBSchedule extends DBTemplate {
         query += "INNER JOIN Employee ";
         query += "INNER JOIN Person AS PatientPerson ON PatientId = PatientPerson.Id ";
         query += "INNER JOIN Person as EmployeePerson ON Employee.PersonId = EmployeePerson.Id ";
-        query += "WHERE Date >= ?";
+        query += "WHERE Date >= ? AND Schedule.State = 0";
         
         var command = new DBCommand(connection);
         var error = command.CreateQuery(query);
         var list = new ArrayList<Schedule>();
         
-        if (error.Code == 0) {     
+        if (error.Code == 0) {
             command.AddParameter(date, DBType.Date);
             var reader = command.ExecuteReader();
             

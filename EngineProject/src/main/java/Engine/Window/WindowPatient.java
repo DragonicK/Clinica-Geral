@@ -214,6 +214,7 @@ public class WindowPatient extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Pressione ENTER para iniciar a pesquisa.");
 
+        ButtonEdit.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonEdit.setText("Editar");
         ButtonEdit.setEnabled(false);
         ButtonEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -222,6 +223,7 @@ public class WindowPatient extends javax.swing.JFrame {
             }
         });
 
+        ButtonExclude.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         ButtonExclude.setText("Excluir");
         ButtonExclude.setEnabled(false);
         ButtonExclude.addActionListener(new java.awt.event.ActionListener() {

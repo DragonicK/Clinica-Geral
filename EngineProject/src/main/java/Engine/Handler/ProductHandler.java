@@ -1,9 +1,9 @@
 package Engine.Handler;
 
-import Engine.Database.DBConfiguration;
-import Engine.Database.DBProduct;
-
 import Engine.Product;
+import Engine.Database.DBProduct;
+import Engine.Database.DBTreatmentProduct;
+import Engine.Database.DBConfiguration;
 
 import java.util.List;
 
@@ -84,7 +84,7 @@ public class ProductHandler implements IProductHandler {
             }
         }
     }
-        
+    
     @Override
     public List<Product> GetProducts() {
         var db = new DBProduct(configuration);
@@ -118,11 +118,21 @@ public class ProductHandler implements IProductHandler {
         
         return null;
     }
-
+    
     @Override
     public boolean CanDelete(Product product) {
-        // TODO
-        // Verificar se o produto existe em um tratamento / venda.
+        var db = new DBTreatmentProduct(configuration);
+        var error = db.Open();
+        
+        if (error.Code == 0) {
+            if (db.IsOpen()) {
+                var result = !db.IsProductUsed(product.Id);
+                db.Close();
+                
+                return result;
+            }
+        }
+        
         return true;
     }
 }

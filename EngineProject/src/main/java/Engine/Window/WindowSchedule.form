@@ -21,7 +21,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Verdana" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Novo Agendamento"/>
+                <Property name="text" type="java.lang.String" value="Nova Consulta"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MenuItemNewActionPerformed"/>
@@ -45,7 +45,7 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
-    <Property name="title" type="java.lang.String" value="Agendamento"/>
+    <Property name="title" type="java.lang.String" value="Consulta"/>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
@@ -72,6 +72,8 @@
               <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
+                      <Component id="ButtonFinish" min="-2" pref="179" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="ButtonEdit" min="-2" pref="179" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="ButtonExclude" min="-2" pref="179" max="-2" attributes="0"/>
@@ -136,6 +138,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="ButtonEdit" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
                   <Component id="ButtonExclude" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
+                  <Component id="ButtonFinish" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="20" max="32767" attributes="0"/>
           </Group>
@@ -272,6 +275,18 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Resultados retornados: 0"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="ButtonFinish">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Verdana" size="12" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Finalizar Consulta"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ButtonFinishActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

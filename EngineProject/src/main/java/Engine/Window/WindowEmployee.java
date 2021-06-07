@@ -159,6 +159,7 @@ public class WindowEmployee extends javax.swing.JFrame {
         MenuItemExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Colaborador");
         setResizable(false);
 
         ButtonEdit.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N

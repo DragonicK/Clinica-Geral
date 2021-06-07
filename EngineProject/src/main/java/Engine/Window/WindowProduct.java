@@ -359,7 +359,7 @@ public class WindowProduct extends javax.swing.JFrame {
                 dependencies.Notifier.Notify(Changes.Product);
             }
             else {
-                ShowMessage("Este produto está vinculado com uma venda e não pode ser deletado.");
+                ShowMessage("Este produto está vinculado com um tratamento finalizado e não pode ser deletado.");
             }
         }
     }//GEN-LAST:event_ButtonExcludeActionPerformed

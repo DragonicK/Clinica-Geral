@@ -78,11 +78,11 @@ public class WindowScheduleDetail extends javax.swing.JDialog {
         
         if (operationState == DBOperationState.Insert) {
             ButtonRegister.setText("Cadastrar");
-            this.setTitle("Cadastrar Novo Agendamento");
+            this.setTitle("Cadastrar Nova Consulta");
         }
         else if (operationState == DBOperationState.Update) {
             ButtonRegister.setText("Atualizar");
-            this.setTitle("Atualizar Agendamento");
+            this.setTitle("Atualizar Consulta");
         }
     }
     

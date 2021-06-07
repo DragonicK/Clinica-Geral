@@ -16,27 +16,69 @@ public class DBTreatment extends DBTemplate {
         connection = new DBConnection(dbConfiguration);
     }
     
+    public boolean IsScheduleUsed(int scheduleId) {
+        var query = "SELECT Id FROM Treatment WHERE ScheduleId = ?";
+        var command = new DBCommand(connection);
+        var error = command.CreateQuery(query);
+        var result = false;
+        
+        if (error.Code == 0) {
+            command.AddParameter(scheduleId, DBType.Int32);
+            
+            var reader = command.ExecuteReader();
+            result = reader.MoveNext();
+            
+            reader.Close();
+            command.Close();
+        }
+        
+        return result;
+    }
+    
+    public int GetLastInsertedId() {
+        var query = "SELECT MAX(Id) As LastId FROM Treatment";
+        
+        var command = new DBCommand(connection);
+        var error = command.CreateQuery(query);
+        var result = -1;
+        
+        if (error.Code == 0) {
+            var reader = command.ExecuteReader();
+            
+            if (reader.MoveNext()) {
+                result = (int)reader.GetData("LastId", DBType.Int32);
+            }
+            
+            reader.Close();
+            command.Close();
+        }
+        
+        return result;
+    }
+    
     public void Put(Treatment treatment) {
-        var query = "INSERT INTO Treatment (ScheduleId) VALUES (?)";
+        var query = "INSERT INTO Treatment (ScheduleId, FinishedDate) VALUES (?, ?)";
         
         var command = new DBCommand(connection);
         var error = command.CreateQuery(query);
         
         if (error.Code == 0) {
             command.AddParameter(treatment.ScheduleId , DBType.Int32);
+            command.AddParameter(treatment.FinishedDate , DBType.Date);
             command.ExecuteQuery();
             command.Close();
         }
     }
     
     public void Update(Treatment treatment) {
-        var query = "UPDATE Treatment SET ScheduleId = ? WHERE Id = ?";
+        var query = "UPDATE Treatment SET ScheduleId = ?, FinishedDate = ? WHERE Id = ?";
         
         var command = new DBCommand(connection);
         var error = command.CreateQuery(query);
         
         if (error.Code == 0) {
             command.AddParameter(treatment.ScheduleId, DBType.Int32);
+            command.AddParameter(treatment.FinishedDate , DBType.Date);
             command.AddParameter(treatment.Id, DBType.Int32);
             command.ExecuteQuery();
             command.Close();
@@ -57,7 +99,7 @@ public class DBTreatment extends DBTemplate {
     }
     
     public List<Treatment> GetTreatments(){
-        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Schedule.Date, Schedule.State, ";
+        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Treatment.FinishedDate, Schedule.Date, Schedule.State, ";
         query += "PatientPerson.Name AS PatientName, PatientPerson.Document AS PatientDocument, ";
         query += "EmployeePerson.Name AS EmployeeName FROM Treatment ";
         query += "INNER JOIN Schedule ON Schedule.State = 1 AND Schedule.Id = Treatment.ScheduleId ";
@@ -68,7 +110,7 @@ public class DBTreatment extends DBTemplate {
     }
     
     public List<Treatment> GetTreatmentsFromDate(Date startDate, Date endDate) {
-        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Schedule.Date, Schedule.State, ";
+        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Treatment.FinishedDate, Schedule.Date, Schedule.State, ";
         query += "PatientPerson.Name AS PatientName, PatientPerson.Document AS PatientDocument, ";
         query += "EmployeePerson.Name AS EmployeeName FROM Treatment ";
         query += "INNER JOIN Schedule ON Schedule.State = 1 AND Schedule.Id = Treatment.ScheduleId ";
@@ -92,6 +134,7 @@ public class DBTreatment extends DBTemplate {
                 treatment.Id = (int)reader.GetData("Id", DBType.Int32);
                 treatment.ScheduleId = (int)reader.GetData("ScheduleId", DBType.Int32);
                 treatment.Date = (Date)reader.GetData("Date", DBType.Date);
+                treatment.FinishedDate = (Date)reader.GetData("FinishedDate", DBType.Date);
                 treatment.State = (byte)reader.GetData("State", DBType.Byte);
                 treatment.PatientName = (String)reader.GetData("PatientName", DBType.String);
                 treatment.PatientDocument = (String)reader.GetData("PatientDocument", DBType.String);
@@ -108,7 +151,7 @@ public class DBTreatment extends DBTemplate {
     }
     
     public List<Treatment> GetByPatientName(String name) {
-        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Schedule.Date, Schedule.State, ";
+        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Treatment.FinishedDate, Schedule.Date, Schedule.State, ";
         query += "PatientPerson.Name AS PatientName, PatientPerson.Document AS PatientDocument, ";
         query += "EmployeePerson.Name AS EmployeeName FROM Treatment ";
         query += "INNER JOIN Schedule ON Schedule.State = 1 AND Schedule.Id = Treatment.ScheduleId ";
@@ -120,7 +163,7 @@ public class DBTreatment extends DBTemplate {
     }
     
     public List<Treatment> GetByPatientDocument(String document) {
-        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Schedule.Date, Schedule.State, ";
+        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Treatment.FinishedDate, Schedule.Date, Schedule.State, ";
         query += "PatientPerson.Name AS PatientName, PatientPerson.Document AS PatientDocument, ";
         query += "EmployeePerson.Name AS EmployeeName FROM Treatment ";
         query += "INNER JOIN Schedule ON Schedule.State = 1 AND Schedule.Id = Treatment.ScheduleId ";
@@ -132,7 +175,7 @@ public class DBTreatment extends DBTemplate {
     }
     
     public List<Treatment> GetByEmployeeName(String name) {
-        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Schedule.Date, Schedule.State, ";
+        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Treatment.FinishedDate, Schedule.Date, Schedule.State, ";
         query += "PatientPerson.Name AS PatientName, PatientPerson.Document AS PatientDocument, ";
         query += "EmployeePerson.Name AS EmployeeName FROM Treatment ";
         query += "INNER JOIN Schedule ON Schedule.State = 1 AND Schedule.Id = Treatment.ScheduleId ";
@@ -144,7 +187,7 @@ public class DBTreatment extends DBTemplate {
     }
     
     public List<Treatment> GetByEmployeeDocument(String document) {
-        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Schedule.Date, Schedule.State, ";
+        var query = "SELECT Treatment.Id, Treatment.ScheduleId, Treatment.FinishedDate, Schedule.Date, Schedule.State, ";
         query += "PatientPerson.Name AS PatientName, PatientPerson.Document AS PatientDocument, ";
         query += "EmployeePerson.Name AS EmployeeName FROM Treatment ";
         query += "INNER JOIN Schedule ON Schedule.State = 1 AND Schedule.Id = Treatment.ScheduleId ";
@@ -173,6 +216,7 @@ public class DBTreatment extends DBTemplate {
                 treatment.Id = (int)reader.GetData("Id", DBType.Int32);
                 treatment.ScheduleId = (int)reader.GetData("ScheduleId", DBType.Int32);
                 treatment.Date = (Date)reader.GetData("Date", DBType.Date);
+                treatment.FinishedDate = (Date)reader.GetData("FinishedDate", DBType.Date);
                 treatment.State = (byte)reader.GetData("State", DBType.Byte);
                 treatment.PatientName = (String)reader.GetData("PatientName", DBType.String);
                 treatment.PatientDocument = (String)reader.GetData("PatientDocument", DBType.String);

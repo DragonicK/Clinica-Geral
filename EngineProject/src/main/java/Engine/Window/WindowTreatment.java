@@ -1,8 +1,9 @@
 package Engine.Window;
 
-import Engine.Common.Strings;
 import Engine.Treatment;
+import Engine.Common.Strings;
 import Engine.Communication.DependencyRepository;
+import Engine.Database.DBOperationState;
 import Engine.Window.Observer.Changes;
 import Engine.Window.Observer.NotificationTreatment;
 
@@ -32,6 +33,8 @@ public class WindowTreatment extends javax.swing.JFrame {
         RadioPerson.add(RadioPatient);
         RadioPerson.add(RadioEmployee);
         RadioPerson.add(RadioDate);
+        
+        SetEnabledButtons(false);
     }
     
     public void UpdateWindow() {
@@ -46,6 +49,7 @@ public class WindowTreatment extends javax.swing.JFrame {
         notification.Add(Changes.Person);
         notification.Add(Changes.Employee);
         notification.Add(Changes.Schedule);
+        notification.Add(Changes.Treatment);
         
         dependencies.Notifier.Add(notification);
     }
@@ -65,7 +69,7 @@ public class WindowTreatment extends javax.swing.JFrame {
         if (handler != null) {
             treatments = handler.GetTreatments();
             SetResultsText();
-            FillTreatment();      
+            FillTreatment();
         }
     }
     
@@ -259,7 +263,6 @@ public class WindowTreatment extends javax.swing.JFrame {
         LabelResults = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        MenuItemNew = new javax.swing.JMenuItem();
         MenuItemExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -351,15 +354,6 @@ public class WindowTreatment extends javax.swing.JFrame {
         jMenu1.setText("Arquivo");
         jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
-        MenuItemNew.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        MenuItemNew.setText("Novo Agendamento");
-        MenuItemNew.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MenuItemNewActionPerformed(evt);
-            }
-        });
-        jMenu1.add(MenuItemNew);
-
         MenuItemExit.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         MenuItemExit.setText("Sair");
         MenuItemExit.addActionListener(new java.awt.event.ActionListener() {
@@ -442,24 +436,23 @@ public class WindowTreatment extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void ButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonEditActionPerformed
-//        if (selectedRow >= 0) {
-//            var schedule = schedules.get(selectedRow);
-//
-//            if (detail == null) {
-//                detail = new WindowScheduleDetail();
-//                detail.SetDependency(dependencies);
-//                detail.setLocationRelativeTo(null);
-//            }
-//
-//            if (!detail.isVisible()) {
-//                detail.Clear();
-//                detail.SetOperationState(DBOperationState.Update);
-//                detail.LoadPatients();
-//                detail.LoadEmployees();
-//                detail.SetSchedule(schedule);
-//                detail.setVisible(true);
-//            }
-//        }
+        if (selectedRow >= 0) {
+            var treatment = treatments.get(selectedRow);
+            
+            if (detail == null) {
+                detail = new WindowTreatmentDetail();
+                detail.SetDependency(dependencies);
+                detail.setLocationRelativeTo(null);
+            }
+            
+            if (!detail.isVisible()) {
+                detail.Clear();
+                detail.SetOperationState(DBOperationState.Update);
+                detail.SetTreatment(treatment);
+                detail.LoadTreatmentProducts();
+                detail.setVisible(true);
+            }
+        }
     }//GEN-LAST:event_ButtonEditActionPerformed
 
     private void ButtonExcludeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonExcludeActionPerformed
@@ -467,13 +460,21 @@ public class WindowTreatment extends javax.swing.JFrame {
             var handler = dependencies.TreatmentHandler;
             var treatment = treatments.get(selectedRow);
             
+            var scheduler = dependencies.ScheduleHandler;
+            var schedule = scheduler.Get(treatment.ScheduleId);
+            
+            // Define como aberto.
+            schedule.State = 0;
+            scheduler.Update(schedule);
+            
             handler.Delete(treatment);
             
             treatments.remove(treatment);
             selectedRow = -1;
             
             // Notifica todos os controles que o tratamento foi alterado.
-            dependencies.Notifier.Notify(Changes.Treatment);
+            dependencies.Notifier.Notify(Changes.Schedule);
+            dependencies.Notifier.Notify(Changes.Treatment);        
         }
     }//GEN-LAST:event_ButtonExcludeActionPerformed
 
@@ -501,22 +502,6 @@ public class WindowTreatment extends javax.swing.JFrame {
             Find();
         }
     }//GEN-LAST:event_TextFindKeyPressed
-
-    private void MenuItemNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemNewActionPerformed
-//        if (detail == null) {
-//            detail = new WindowScheduleDetail();
-//            detail.SetDependency(dependencies);
-//            detail.setLocationRelativeTo(null);
-//        }
-//
-//        if (!detail.isVisible()) {
-//            detail.Clear();
-//            detail.SetOperationState(DBOperationState.Insert);
-//            detail.LoadPatients();
-//            detail.LoadEmployees();
-//            detail.setVisible(true);
-//        }
-    }//GEN-LAST:event_MenuItemNewActionPerformed
 
     private void MenuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemExitActionPerformed
         this.setVisible(false);
@@ -563,7 +548,6 @@ public class WindowTreatment extends javax.swing.JFrame {
     private javax.swing.JButton ButtonExclude;
     private javax.swing.JLabel LabelResults;
     private javax.swing.JMenuItem MenuItemExit;
-    private javax.swing.JMenuItem MenuItemNew;
     private javax.swing.JRadioButton RadioDate;
     private javax.swing.JRadioButton RadioDocument;
     private javax.swing.JRadioButton RadioEmployee;
